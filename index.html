@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            height: 100vh;
+            width: 100vw;
+            background: #000;
+            margin: 0rem;
+            overflow: hidden;
+        }
+
+        #image-track {
+            display: flex;
+            gap: 4vmin;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(0%, -50%);
+            user-select: none;
+            
+        }
+    
+        #image-track > .image {
+            width: 40vmin;
+            height: 56vmin;
+            object-fit: cover;
+            object-position: 100% center;
+        }
+    
+        
+    
+    </style>
+</head>
+<body>
+    
+
+    <div>
+        <div class="" id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
+                <img class="image" src="https://images.unsplash.com/photo-1661961111184-11317b40adb2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80" alt="" draggable="false">
+                <img class="image" src="https://images.unsplash.com/photo-1670217470538-e442d7d5ec10?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="" draggable="false">
+                <img class="image" src="https://images.unsplash.com/photo-1670238115034-cf9936ae00ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="" draggable="false">
+                <img class="image" src="https://images.unsplash.com/photo-1669799369807-1b64b42530a3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1075&q=80" alt="" draggable="false">
+                <img class="image" src="https://images.unsplash.com/photo-1657299156653-d3c0147ba3ee?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="" draggable="false">
+                <img class="image" src="https://images.unsplash.com/photo-1670252166282-814a571280c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="" draggable="false">
+                <img class="image" src="https://images.unsplash.com/photo-1664575196044-195f135295df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="" draggable="false">
+        </div>
+    </div>
+
+    <script>
+                
+        const track = document.getElementById('image-track')
+
+        const handleOnDown = e => track.dataset.mouseDownAt = e.clientX
+
+        const handleOnUp = () => {
+            track.dataset.mouseDownAt = '0'
+            track.dataset.prevPercentage = track.dataset.percentage
+        }
+
+        const handleOnMove = e => {
+            if(track.dataset.mouseDownAt === '0') return
+            
+            const mouseDelta = parseFloat(track.dataset.mouseDownAt) - e.clientX,
+                  maxDelta = window.innerWidth / 2 
+
+            const percentage = (mouseDelta / maxDelta) * -100,
+                  nextPercentageUnconstrained = parseFloat(track.dataset.prevPercentage) + percentage,
+                  nextPercentage = Math.max(Math.min(nextPercentageUnconstrained, 0), -100)
+
+            track.dataset.percentage = nextPercentage
+
+            track.animate({
+                transform: `translate(${nextPercentage}%, -50%)`
+            }, {duration: 1200, fill: 'forwards'})
+
+            for(const image of track.getElementsByClassName('image')) {
+                image.animate({
+                    objectPosition: `${100 + nextPercentage}% center` 
+                }, {duration: 1200, fill: 'forwards'})
+            }
+
+        }
+
+        window.onmousedown = e => handleOnDown(e)
+
+        window.ontouchstart = e => handleOnDown(e.touches[0])
+
+        window.onmouseup = e => handleOnUp(e) 
+
+        window.ontouchend = e => handleOnUp(e.touches[0])
+
+        window.onmousemove = e => handleOnMove(e)
+
+        window.ontouchmove = e => handleOnMove(e.touches[0])
+
+    
+      
+    </script>
+</body>
+</html>
